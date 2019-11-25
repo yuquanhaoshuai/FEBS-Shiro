@@ -181,4 +181,18 @@ public class UserController extends BaseController {
             throw new FebsException(message);
         }
     }
+
+    @PostMapping("/synchro")
+    @RequiresPermissions("user:synchro")
+    public FebsResponse synchro() throws FebsException {
+        try {
+//            String[] usernameArr = usernames.split(StringPool.COMMA);
+//            this.userService.resetPassword(usernameArr);
+            return new FebsResponse().success();
+        } catch (Exception e) {
+            String message = "重置用户密码失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
 }

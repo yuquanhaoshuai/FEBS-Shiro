@@ -52,6 +52,8 @@ public class LoginController extends BaseController {
         UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
         try {
             super.login(token);
+            // 更新登录时间
+            this.userService.updateLoginTime(username);
             // 保存登录日志
             LoginLog loginLog = new LoginLog();
             loginLog.setUsername(username);
@@ -80,8 +82,6 @@ public class LoginController extends BaseController {
 
     @GetMapping("index/{username}")
     public FebsResponse index(@NotBlank(message = "{required}") @PathVariable String username) {
-        // 更新登录时间
-        this.userService.updateLoginTime(username);
         Map<String, Object> data = new HashMap<>();
         // 获取系统访问记录
         Long totalVisitCount = this.loginLogService.findTotalVisitCount();

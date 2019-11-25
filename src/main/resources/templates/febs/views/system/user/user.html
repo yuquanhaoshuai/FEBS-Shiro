@@ -179,6 +179,13 @@
                     params.pageNum = $view.find(".layui-laypage-em").next().html();
                     febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
                 }
+                if (name === 'synchro'){
+                    febs.modal.confirm('同步用户', '确定同步oa用户？', function () {
+                        febs.post(ctx + 'user/synchro/' , null, function () {
+                            febs.alert.success('所选用户密码已重置为1234qwer');
+                        });
+                    });
+                }
             },
             options: [{
                 name: 'add',
@@ -196,6 +203,10 @@
                 name: 'export',
                 title: '导出Excel',
                 perms: 'user:export'
+            }, {
+                name: 'synchro',
+                title: '同步用户',
+                perms: 'user:add'
             }]
         });
 
