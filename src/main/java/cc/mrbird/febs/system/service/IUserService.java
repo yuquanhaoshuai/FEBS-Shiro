@@ -1,9 +1,12 @@
 package cc.mrbird.febs.system.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.system.entity.OAUser;
 import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * @author MrBird
@@ -109,4 +112,8 @@ public interface IUserService extends IService<User> {
      * @param user 个人信息
      */
     void updateProfile(User user);
+
+    boolean sync(List<OAUser> list);
+
+    List<OAUser> getAllOAUser();
 }

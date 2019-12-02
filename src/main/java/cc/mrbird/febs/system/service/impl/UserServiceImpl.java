@@ -6,11 +6,14 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
+import cc.mrbird.febs.system.entity.OAUser;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserRole;
+import cc.mrbird.febs.system.mapper.MSSqlUserMapper;
 import cc.mrbird.febs.system.mapper.UserMapper;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -19,14 +22,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author MrBird
@@ -39,6 +40,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private IUserRoleService userRoleService;
     @Autowired
     private ShiroRealm shiroRealm;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private MSSqlUserMapper msSqlUserMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public User findByName(String username) {
@@ -76,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setAvatar(User.DEFAULT_AVATAR);
         user.setTheme(User.THEME_BLACK);
         user.setIsTab(User.TAB_OPEN);
-        user.setPassword(MD5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
+        user.setPassword(MD5Util.MD5(User.DEFAULT_PASSWORD));
         save(user);
         // 保存用户角色
         String[] roles = user.getRoleId().split(StringPool.COMMA);
@@ -117,7 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void resetPassword(String[] usernames) {
         Arrays.stream(usernames).forEach(username -> {
             User user = new User();
-            user.setPassword(MD5Util.encrypt(username, User.DEFAULT_PASSWORD));
+            user.setPassword(MD5Util.MD5(User.DEFAULT_PASSWORD));
             this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         });
     }
@@ -126,7 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public void regist(String username, String password) {
         User user = new User();
-        user.setPassword(MD5Util.encrypt(username, password));
+        user.setPassword(MD5Util.MD5(password));
         user.setUsername(username);
         user.setCreateTime(new Date());
         user.setStatus(User.STATUS_VALID);
@@ -147,7 +157,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public void updatePassword(String username, String password) {
         User user = new User();
-        user.setPassword(MD5Util.encrypt(username, password));
+        user.setPassword(MD5Util.MD5(password));
         user.setModifyTime(new Date());
         this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
     }
@@ -190,4 +200,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         });
         userRoleService.saveBatch(userRoles);
     }
+
+    @Override
+    public boolean sync(List<OAUser> list) {
+       // List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from hrmresource");
+        List<User> users = new ArrayList<>();
+        for(OAUser oaUser: list){
+            User local_user =this.baseMapper.findByName(oaUser.getLoginid());
+            User user = transform(oaUser);
+            if(null == local_user){
+                userMapper.insert(user);
+            }
+            else{
+                user.setUserId(local_user.getUserId());
+                userMapper.updateById(user);
+            }
+        }
+        return true;
+    }
+
+    @DS("sqlserver")
+    @Override
+    public List<OAUser> getAllOAUser(){
+        return msSqlUserMapper.findAll();
+    }
+
+    //格式化用户属性
+    public User transform(OAUser oaUser){
+        User user = new User();
+        user.setUsername(oaUser.getLoginid());
+        user.setPassword(oaUser.getPassword());
+        user.setEmail(oaUser.getEmail());
+        user.setMobile(oaUser.getMobile());
+        user.setStatus("1");
+        user.setCreateTime(new Date());
+        user.setModifyTime(new Date());
+        user.setLastLoginTime(new Date());
+        user.setSex(oaUser.getSex());
+        user.setIsTab("1");
+        user.setTheme("white");
+        user.setRealname(oaUser.getLastname());
+        return user;
+    }
+
 }

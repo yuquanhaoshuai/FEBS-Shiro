@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.system.mapper.MSSqlUserMapper">
+    
+    <resultMap id="oauser" type="cc.mrbird.febs.system.entity.OAUser">
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER" property="id"></id>
+        <result column="loginid" javaType="java.lang.String" property="loginid" jdbcType="VARCHAR"></result>
+        <result column="password" javaType="java.lang.String" property="password" jdbcType="VARCHAR"></result>
+        <result column="lastname" javaType="java.lang.String" property="lastname" jdbcType="VARCHAR"></result>
+        <result column="sex" javaType="java.lang.String" property="sex" jdbcType="VARCHAR"></result>
+        <result column="telephone" javaType="java.lang.String" property="telephone" jdbcType="VARCHAR"></result>
+        <result column="mobile" javaType="java.lang.String" property="mobile" jdbcType="VARCHAR"></result>
+        <result column="departmentid" javaType="java.lang.Integer" property="departmentid" jdbcType="INTEGER"></result>
+        <result column="subcompanyid1" javaType="java.lang.Integer" property="subcompanyid1" jdbcType="INTEGER"></result>
+        <result column="managerid" javaType="java.lang.Integer" property="managerid" jdbcType="INTEGER"></result>
+        <result column="status" javaType="java.lang.Integer" property="status" jdbcType="INTEGER"></result>
+    </resultMap>
+    
+    <sql id="findUserDetailSql">
+        SELECT
+        u.id id,
+        u.loginid,
+        u.password,
+        u.lastname,
+        u.sex,
+        u.telephone,
+        u.mobile,
+        u.email,
+        u.mobile,
+        u.departmentid,
+        u.subcompanyid1,
+        u.managerid,
+        u.status
+        FROM
+        hrmresource u
+
+        WHERE 1 = 1 AND status &lt; 4 AND  departmentid=422
+
+    </sql>
+
+    <select id="findAll" resultMap="oauser">
+        <include refid="findUserDetailSql"></include>
+    </select>
+</mapper>

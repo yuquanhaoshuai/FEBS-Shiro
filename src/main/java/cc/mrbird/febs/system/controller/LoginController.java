@@ -48,8 +48,10 @@ public class LoginController extends BaseController {
         if (!CaptchaUtil.verify(verifyCode, request)) {
             throw new FebsException("验证码错误！");
         }
-        password = MD5Util.encrypt(username.toLowerCase(), password);
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
+        //password = MD5Util.encrypt(username.toLowerCase(), password);
+        password = MD5Util.MD5(password);//替换加密方式成MD5加密
+        password = password.toUpperCase();
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password.toUpperCase(), rememberMe);
         try {
             super.login(token);
             // 更新登录时间

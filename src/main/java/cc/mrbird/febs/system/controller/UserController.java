@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.MD5Util;
+import cc.mrbird.febs.system.entity.OAUser;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -117,7 +118,7 @@ public class UserController extends BaseController {
             @NotBlank(message = "{required}") String newPassword) throws FebsException {
         try {
             User user = getCurrentUser();
-            if (!StringUtils.equals(user.getPassword(), MD5Util.encrypt(user.getUsername(), oldPassword))) {
+            if (!StringUtils.equals(user.getPassword(), MD5Util.MD5(oldPassword))) {
                 throw new FebsException("原密码不正确");
             }
             userService.updatePassword(user.getUsername(), newPassword);
@@ -186,11 +187,11 @@ public class UserController extends BaseController {
     @RequiresPermissions("user:synchro")
     public FebsResponse synchro() throws FebsException {
         try {
-//            String[] usernameArr = usernames.split(StringPool.COMMA);
-//            this.userService.resetPassword(usernameArr);
+            List<OAUser> list = this.userService.getAllOAUser();
+            this.userService.sync(list);
             return new FebsResponse().success();
         } catch (Exception e) {
-            String message = "重置用户密码失败";
+            String message = "同步用户失败";
             log.error(message, e);
             throw new FebsException(message);
         }

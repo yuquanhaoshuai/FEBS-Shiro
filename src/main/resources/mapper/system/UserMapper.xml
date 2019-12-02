@@ -5,6 +5,7 @@
         SELECT
         u.user_id userId,
         u.username,
+        u.realname,
         u.email,
         u.mobile,
         u.status,
@@ -59,6 +60,7 @@
         SELECT
         u.user_id userId,
         u.username,
+        u.realname,
         u.email,
         u.mobile,
         u.password,

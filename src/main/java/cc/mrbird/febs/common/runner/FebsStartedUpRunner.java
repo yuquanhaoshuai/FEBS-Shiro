@@ -59,7 +59,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
             log.info("/ /`  / / \\ | |\\/| | |_) | |   | |_   | |  | |_  ");
             log.info("\\_\\_, \\_\\_/ |_|  | |_|   |_|__ |_|__  |_|  |_|__ ");
             log.info("                                                      ");
-            log.info("FEBS 权限系统启动完毕，地址：{}", url);
+            log.info("springboot 学习系统启动完毕，地址：{}", url);
         }
     }
 }

@@ -66,6 +66,14 @@ public class User implements Serializable {
     private String username;
 
     /**
+     * 真实姓名
+     * */
+    @TableField("REALNAME")
+    @Size(min = 2, max = 10, message = "{range}")
+    @ExcelField(value = "真实姓名")
+    private String realname;
+
+    /**
      * 密码
      */
     @TableField("PASSWORD")

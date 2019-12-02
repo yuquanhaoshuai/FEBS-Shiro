@@ -8,7 +8,7 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">用户名</label>
+                                        <label class="layui-form-label layui-form-label-sm">工号</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="username" autocomplete="off" class="layui-input">
                                         </div>
@@ -180,9 +180,10 @@
                     febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
                 }
                 if (name === 'synchro'){
-                    febs.modal.confirm('同步用户', '确定同步oa用户？', function () {
+                    febs.modal.confirm('同步用户', '确定同步OA用户？', function () {
                         febs.post(ctx + 'user/synchro/' , null, function () {
-                            febs.alert.success('所选用户密码已重置为1234qwer');
+                            febs.alert.success('同步OA用户成功');
+                            $("#reset").click();
                         });
                     });
                 }
@@ -275,7 +276,8 @@
                 url: ctx + 'user/list',
                 cols: [[
                     {type: 'checkbox'},
-                    {field: 'username', title: '用户名', minWidth: 100},
+                    {field: 'username', title: '工号', minWidth: 100},
+                    {field: 'realname', title: '姓名', minWidth: 100},
                     {title: '性别', templet: '#user-sex'},
                     {field: 'deptName', title: '部门'},
                     {field: 'mobile', title: '手机', minWidth: 165},

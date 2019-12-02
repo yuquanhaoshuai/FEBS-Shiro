@@ -25,6 +25,14 @@ spring:
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://127.0.0.1:3306/febs_quartz?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+        # 数据源2 sqlserver
+        sqlserver:
+          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          url: jdbc:sqlserver://10.10.120.134:1433;DatabaseName=Ecology
+#          username: sa
+#          password: Jbdg.1234
+          username: admin
+          password: Jbdg@1234
 
   redis:
     # Redis数据库索引（默认为 0）

@@ -180,6 +180,13 @@
             <artifactId>jsoup</artifactId>
             <version>1.9.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>6.2.0.jre8</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
