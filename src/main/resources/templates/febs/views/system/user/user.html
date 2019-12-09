@@ -14,6 +14,12 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">姓名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="realname" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">创建时间</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="createTime" id="createTime" class="layui-input">
@@ -300,6 +306,7 @@
             return {
                 createTimeFrom: createTimeFrom,
                 createTimeTo: createTimeTo,
+                realname: $searchForm.find('input[name="realname"]').val().trim(),
                 username: $searchForm.find('input[name="username"]').val().trim(),
                 status: $searchForm.find("select[name='status']").val(),
                 sex: $searchForm.find("select[name='sex']").val(),
