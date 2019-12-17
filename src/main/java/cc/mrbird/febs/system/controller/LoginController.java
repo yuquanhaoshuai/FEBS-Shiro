@@ -50,7 +50,6 @@ public class LoginController extends BaseController {
         }
         //password = MD5Util.encrypt(username.toLowerCase(), password);
         password = MD5Util.MD5(password);//替换加密方式成MD5加密
-        password = password.toUpperCase();
         UsernamePasswordToken token = new UsernamePasswordToken(username, password.toUpperCase(), rememberMe);
         try {
             super.login(token);

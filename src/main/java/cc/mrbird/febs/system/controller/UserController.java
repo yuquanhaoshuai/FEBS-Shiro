@@ -118,7 +118,7 @@ public class UserController extends BaseController {
             @NotBlank(message = "{required}") String newPassword) throws FebsException {
         try {
             User user = getCurrentUser();
-            if (!StringUtils.equals(user.getPassword(), MD5Util.MD5(oldPassword))) {
+            if (!StringUtils.equals(user.getPassword(), MD5Util.MD5(oldPassword).toUpperCase())) {
                 throw new FebsException("原密码不正确");
             }
             userService.updatePassword(user.getUsername(), newPassword);
