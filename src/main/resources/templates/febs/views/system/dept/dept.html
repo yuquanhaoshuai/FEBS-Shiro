@@ -148,6 +148,14 @@
                 if (name === 'export') {
                     febs.download(ctx + 'dept/excel', getQueryParams(), '部门信息表.xlsx');
                 }
+                if (name === 'sync'){
+                    febs.modal.confirm('同步部门', '确定同步OA组织架构？', function () {
+                        febs.post(ctx + 'dept/sync/' , null, function () {
+                            febs.alert.success('同步OA组织架构成功');
+                            $("#reset").click();
+                        });
+                    });
+                }
             },
             options: [{
                 name: 'add',
@@ -161,6 +169,10 @@
                 name: 'export',
                 title: '导出Excel',
                 perms: 'dept:export'
+            }, {
+                name: 'sync',
+                title: '同步部门',
+                perms: 'dept:sync'
             }]
         });
 

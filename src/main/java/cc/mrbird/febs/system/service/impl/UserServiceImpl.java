@@ -204,11 +204,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public boolean sync(List<OAUser> list) {
        // List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from hrmresource");
-        List<User> users = new ArrayList<>();
+       // List<User> users = new ArrayList<>();
         for(OAUser oaUser: list){
             User local_user =this.baseMapper.findByName(oaUser.getLoginid());
             User user = transform(oaUser);
             if(null == local_user){
+                user.setCreateTime(new Date());
                 userMapper.insert(user);
             }
             else{
@@ -230,10 +231,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = new User();
         user.setUsername(oaUser.getLoginid());
         user.setPassword(oaUser.getPassword());
+        user.setDeptId((long) oaUser.getDepartmentid());
         user.setEmail(oaUser.getEmail());
         user.setMobile(oaUser.getMobile());
         user.setStatus("1");
-        user.setCreateTime(new Date());
         user.setModifyTime(new Date());
         user.setLastLoginTime(new Date());
         user.setSex(oaUser.getSex());

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.system.mapper.MSSQLDeptMapper">
+    
+    <resultMap id="oadept" type="cc.mrbird.febs.system.entity.OADept">
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER" property="id"></id>
+        <result column="departmentname" javaType="java.lang.String" property="departmentname" jdbcType="VARCHAR"></result>
+        <result column="parent_id" javaType="java.lang.Integer" property="parent_id" jdbcType="INTEGER"></result>
+        <result column="showerorder" javaType="java.lang.Integer" property="showorder" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <select id="findAll" resultMap="oadept">
+        select 100000 as id,companyname as departmentname,0 as parent_id,0 as showorder  from  HrmCompany union all
+        select id,subcompanyname as departmentname,100000 as parent_id,ISNULL(showorder, 0) as showorder from   HrmSubCompany where supsubcomid=0 union all
+        select id,subcompanyname as departmentname,supsubcomid as parent_id,ISNULL(showorder, 0) as showorder from   HrmSubCompany where supsubcomid!=0 union all
+        select id,departmentname,supdepid as parent_id,ISNULL(showorder, 0) as showorder from HrmDepartment where supdepid !=0 union all
+        select id,departmentname,subcompanyid1 as parent_id,ISNULL(showorder, 0) as showorder from HrmDepartment where supdepid =0
+    </select>
+</mapper>

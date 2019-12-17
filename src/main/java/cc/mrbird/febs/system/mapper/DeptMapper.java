@@ -13,4 +13,6 @@ public interface DeptMapper extends BaseMapper<Dept> {
      * @param deptId deptId
      */
     void deleteDepts(String deptId);
+
+    boolean add(Dept dept);
 }

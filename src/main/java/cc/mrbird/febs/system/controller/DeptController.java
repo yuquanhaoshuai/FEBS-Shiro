@@ -7,6 +7,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.system.entity.Dept;
+import cc.mrbird.febs.system.entity.OADept;
 import cc.mrbird.febs.system.service.IDeptService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
@@ -105,6 +106,20 @@ public class DeptController {
             ExcelKit.$Export(Dept.class, response).downXlsx(depts, false);
         } catch (Exception e) {
             String message = "导出Excel失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    @PostMapping("/sync")
+    @RequiresPermissions("dept:sync")
+    public FebsResponse synchro() throws FebsException {
+        try {
+            List<OADept> list = this.deptService.getAllOADept();
+            this.deptService.sync(list);
+            return new FebsResponse().success();
+        } catch (Exception e) {
+            String message = "同步组织架构失败";
             log.error(message, e);
             throw new FebsException(message);
         }

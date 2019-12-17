@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.system.mapper.DeptMapper">
+
+    <resultMap id="dept" type="cc.mrbird.febs.system.entity.Dept">
+        <id column="dept_id" javaType="java.lang.Long" jdbcType="BIGINT" property="deptId"></id>
+        <result column="parent_id" javaType="java.lang.Long" property="parentId" jdbcType="BIGINT"></result>
+        <result column="dept_name" javaType="java.lang.String" property="deptName" jdbcType="VARCHAR"></result>
+        <result column="order_num" javaType="java.lang.Long" property="orderNum" jdbcType="BIGINT"></result>
+        <result column="create_time" javaType="java.util.Date" property="createTime" jdbcType="DATE"></result>
+        <result column="modify_time" javaType="java.util.Date" property="modifyTime" jdbcType="DATE"></result>
+    </resultMap>
+
     <!-- 递归删除菜单，findDeptChildren为自定义的 MySQL函数，作用为根据当前 deptId递归查找出其所有下级部门 -->
     <delete id="deleteDepts" parameterType="string">
         DELETE
@@ -9,4 +19,9 @@
         WHERE
             dept_id IN ( SELECT d.dept_id FROM ( SELECT dept_id FROM t_dept WHERE FIND_IN_SET( dept_id, findDeptChildren ( #{deptId} ) ) > 0 ) d )
     </delete>
+
+    <insert id="add" parameterType="cc.mrbird.febs.system.entity.Dept">
+        insert into t_dept(dept_id,parent_id,dept_name,order_num,create_time,modify_time)
+        values (#{deptId},#{parentId},#{deptName},#{orderNum},#{createTime},#{modifyTime})
+    </insert>
 </mapper>

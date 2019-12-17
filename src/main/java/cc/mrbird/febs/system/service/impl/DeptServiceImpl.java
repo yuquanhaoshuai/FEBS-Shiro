@@ -6,11 +6,15 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.common.utils.TreeUtil;
 import cc.mrbird.febs.system.entity.Dept;
+import cc.mrbird.febs.system.entity.OADept;
 import cc.mrbird.febs.system.mapper.DeptMapper;
+import cc.mrbird.febs.system.mapper.MSSQLDeptMapper;
 import cc.mrbird.febs.system.service.IDeptService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,12 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements IDeptService {
 
+    @Autowired
+    private MSSQLDeptMapper mssqlDeptMapper;
+
+    @Autowired
+    private DeptMapper deptMapper;
+
     @Override
     public List<DeptTree<Dept>> findDepts() {
         List<Dept> depts = this.baseMapper.selectList(new QueryWrapper<>());
@@ -39,7 +49,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         QueryWrapper<Dept> queryWrapper = new QueryWrapper<>();
 
         if (StringUtils.isNotBlank(dept.getDeptName()))
-            queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());
+        {queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());}
         queryWrapper.lambda().orderByAsc(Dept::getOrderNum);
 
         List<Dept> depts = this.baseMapper.selectList(queryWrapper);
@@ -52,7 +62,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         QueryWrapper<Dept> queryWrapper = new QueryWrapper<>();
 
         if (StringUtils.isNotBlank(dept.getDeptName()))
-            queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());
+        {   queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());}
         SortUtil.handleWrapperSort(request, queryWrapper, "orderNum", FebsConstant.ORDER_ASC, true);
         return this.baseMapper.selectList(queryWrapper);
     }
@@ -62,7 +72,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     public void createDept(Dept dept) {
         Long parentId = dept.getParentId();
         if (parentId == null)
-            dept.setParentId(0L);
+        {   dept.setParentId(0L);}
         dept.setCreateTime(new Date());
         this.save(dept);
     }
@@ -91,5 +101,33 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             trees.add(tree);
         });
         return trees;
+    }
+
+    @DS("sqlserver")
+    @Override
+    public List<OADept> getAllOADept() {
+        return mssqlDeptMapper.findAll();
+    }
+
+    @Override
+    public boolean sync(List<OADept> list) {
+        for(OADept oaDept:list){
+            Dept dept = new Dept();
+            dept.setDeptId((long) oaDept.getId());
+            dept.setDeptName(oaDept.getDepartmentname());
+            dept.setParentId((long) oaDept.getParent_id());
+            dept.setOrderNum((long) oaDept.getShoworder());
+            Dept local_dept = deptMapper.selectById((long) oaDept.getId());
+            if(null == local_dept){
+                dept.setCreateTime(new Date());
+                dept.setModifyTime(new Date());
+                deptMapper.add(dept);
+            }
+            else{
+                dept.setModifyTime(new Date());
+                deptMapper.updateById(dept);
+            }
+        }
+        return true;
     }
 }
