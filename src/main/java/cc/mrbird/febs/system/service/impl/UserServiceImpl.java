@@ -244,4 +244,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return user;
     }
 
+    @Override
+    public IPage<User> findUserDetail(List<String> deptIds, QueryRequest request) {
+        Page<User> page = new Page<>(request.getPageNum(), request.getPageSize());
+        SortUtil.handlePageSort(request, page, "userId", FebsConstant.ORDER_ASC, false);
+        return this.baseMapper.findByDeptIds(page, deptIds);
+    }
 }

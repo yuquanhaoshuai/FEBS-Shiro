@@ -116,4 +116,13 @@ public interface IUserService extends IService<User> {
     boolean sync(List<OAUser> list);
 
     List<OAUser> getAllOAUser();
+
+    /**
+     *  根据部门查找用户详细信息
+     *
+     * @param request request
+     * @param deptIds    部门ids，用于传递查询条件
+     * @return IPage
+     */
+    IPage<User> findUserDetail(List<String> deptIds, QueryRequest request);
 }

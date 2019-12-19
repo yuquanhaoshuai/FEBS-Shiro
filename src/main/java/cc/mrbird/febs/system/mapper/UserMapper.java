@@ -38,4 +38,12 @@ public interface UserMapper extends BaseMapper<User> {
      */
     List<User> findUserDetail(@Param("user") User user);
 
+    /**
+     * 查找用户信息
+     *
+     * @param deptIds 所属部门ids，用于传递查询条件
+     * @return List<User>
+     */
+    IPage<User> findByDeptIds(Page page,List<String> deptIds);
+
 }

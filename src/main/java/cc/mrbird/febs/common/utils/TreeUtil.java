@@ -66,6 +66,8 @@ public class TreeUtil {
             for (DeptTree<T> n : nodes) {
                 String id = n.getId();
                 if (id != null && id.equals(pid)) {
+                    if(pid=="100000"){
+                    }
                     if (n.getChildren() == null)
                         n.initChildren();
                     n.getChildren().add(children);

@@ -1,7 +1,11 @@
 <div class="layui-fluid layui-anim febs-anim" id="febs-user" lay-title="用户管理">
     <div class="layui-row febs-container">
         <div class="layui-col-md4">
-            11
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <div class="dept-tree" lay-filter="deptTree" style="margin-left: 1rem"></div>
+                </div>
+            </div>
         </div>
         <div class="layui-col-md8">
             <div class="layui-card">
@@ -114,7 +118,7 @@
     <a lay-event="del" shiro:hasPermission="user:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
-    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect','eleTree'], function () {
         var $ = layui.jquery,
             laydate = layui.laydate,
             febs = layui.febs,
@@ -127,11 +131,15 @@
             $reset = $view.find('#reset'),
             $searchForm = $view.find('form'),
             sortObject = {field: 'createTime', type: null},
+            eleTree = layui.eleTree,
+            _deptTree,
             tableIns;
 
         form.render();
 
         initTable();
+
+        renderDeptTree();
 
         laydate.render({
             elem: '#createTime',
@@ -275,6 +283,7 @@
             $searchForm[0].reset();
             treeSelect.revokeNode('dept');
             sortObject.type = 'null';
+            _deptTree.unCheckNodes();
             tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
         });
 
@@ -315,7 +324,7 @@
                 sex: $searchForm.find("select[name='sex']").val(),
                 mobile: $searchForm.find("input[name='mobile']").val().trim(),
                 deptId: $searchForm.find("input[name='dept']").val().trim(),
-                invalidate_ie_cache: new Date()
+                invalidate_ie_cache: new Date(),
             };
         }
 
@@ -330,5 +339,65 @@
                 $query.click();
             });
         }
+
+        function renderDeptTree() {
+            _deptTree = eleTree.render({
+                elem: '.dept-tree',
+                url: ctx + 'dept/tree',
+                accordion: true,
+                highlightCurrent: true,
+                expandOnClickNode: false,
+                checkOnClickNode: true,
+                showCheckbox: true,
+                checkStrictly: true,
+                renderAfterExpand: true,
+                defaultExpandAll: true,
+                checkStrictly: false,
+                where: {
+                    "invalidate_ie_cache": new Date()
+                },
+                request: {
+                    name: 'name',
+                    key: "id",
+                    checked: "checked",
+                    data: 'data'
+                },
+                response: {
+                    statusName: "code",
+                    statusCode: 200,
+                    dataName: "data"
+                }
+            });
+            return _deptTree;
+        }
+
+        // 节点点击事件
+        // eleTree.on("nodeClick(deptTree)",function(d) {
+        //     // console.log(d.data);    // 点击节点对于的数据
+        //     // console.log(d.event);   // event对象
+        //     // console.log(d.node);    // 点击的dom节点
+        //     // console.log(this);      // 与d.node相同
+        //     console.log(d.data);
+        // })
+
+        // input被选中事件
+        eleTree.on("nodeChecked(deptTree)",function(d) {
+            var nodes = _deptTree.getChecked();
+            var deptIds = [];
+            if(nodes.length>0){
+                $.each(nodes,function (index,value) {
+                    // console.log(value);
+                    // console.log(value["id"]);
+                    deptIds.push(value["id"])
+                })
+                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type},{deptIds:deptIds});
+                tableIns.reload({where: params, page: {curr: 1}});
+            }
+            else{
+                tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
+            }
+            // console.log(deptIds);
+            // console.log(nodes);
+        })
     })
 </script>

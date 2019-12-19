@@ -48,8 +48,14 @@ public class UserController extends BaseController {
 
     @GetMapping("list")
     @RequiresPermissions("user:view")
-    public FebsResponse userList(User user, QueryRequest request) {
-        Map<String, Object> dataTable = getDataTable(this.userService.findUserDetail(user, request));
+    public FebsResponse userList(User user, QueryRequest request,@RequestParam(value = "deptIds[]",defaultValue = "") List<String> deptIds) {
+        Map<String, Object> dataTable;
+        if(deptIds.isEmpty()){
+            dataTable = getDataTable(this.userService.findUserDetail(user, request));
+        }
+        else{
+           dataTable = getDataTable(this.userService.findUserDetail(deptIds, request));
+        }
         return new FebsResponse().success().data(dataTable);
     }
 

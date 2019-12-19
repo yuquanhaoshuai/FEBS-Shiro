@@ -49,7 +49,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         QueryWrapper<Dept> queryWrapper = new QueryWrapper<>();
 
         if (StringUtils.isNotBlank(dept.getDeptName()))
-        {queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());}
+        queryWrapper.lambda().eq(Dept::getDeptName, dept.getDeptName());
         queryWrapper.lambda().orderByAsc(Dept::getOrderNum);
 
         List<Dept> depts = this.baseMapper.selectList(queryWrapper);
