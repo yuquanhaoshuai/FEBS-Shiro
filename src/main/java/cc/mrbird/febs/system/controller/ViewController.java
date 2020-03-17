@@ -168,4 +168,11 @@ public class ViewController extends BaseController {
         if (user.getLastLoginTime() != null)
             model.addAttribute("lastLoginTime", DateUtil.getDateFormat(user.getLastLoginTime(), DateUtil.FULL_TIME_SPLIT_PATTERN));
     }
+
+    @GetMapping(FebsConstant.VIEW_PREFIX + "business/tlxs")
+    @RequiresPermissions("menu:view")
+    public String businessTlxs() {
+        return FebsUtil.view("business/tlxsReport");
+    }
+
 }
